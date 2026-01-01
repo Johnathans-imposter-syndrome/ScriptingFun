@@ -6,7 +6,9 @@ A PowerShell function for querying domain registration status, expiration risk a
 
 `Get-DomainStatus` provides actionable intelligence about domain registration state by combining RDAP (Registration Data Access Protocol) queries with optional WHOIS cross-referencing. Unlike simple expiration date lookups, this function interprets EPP status codes to assess actual expiration risk.
 
-## The Problem
+## Why
+
+I was bored, and just felt like making a powershell function to more easily obtain data about a domain. There's no reason you can't just check on domain the old fashioned way. But if you want a LLM to make up a reason for this existing, here you go!
 
 Domain expiration dates are misleading. A domain showing "expires tomorrow" will almost always auto-renew silently. Meanwhile, a domain with `clientRenewProhibited` status might be in genuine jeopardy even with time remaining. This function solves that by:
 
