@@ -60,7 +60,10 @@ function Get-DomainStatus {
         # Try IANA bootstrap first (RFC 7484)
         try {
             $bootstrap = Invoke-RestMethod "https://data.iana.org/rdap/dns.json" -ErrorAction Stop
-            $rdapServer = ($bootstrap.services | Where-Object { $_[0] -contains $tld })[1][0]
+            $match = $bootstrap.services | Where-Object { $_[0] -contains $tld }
+            if ($match) {
+                $rdapServer = $match[1][0]
+            }
         }
         catch {
             Write-Verbose "IANA bootstrap failed: $_"
@@ -133,12 +136,16 @@ function Get-DomainStatus {
             
             # Extract registrar info from RDAP
             $registrarEntity = $rdap.entities | Where-Object { $_.roles -contains 'registrar' }
-            $registrarName = $registrarEntity.vcardArray[1] | 
-                Where-Object { $_[0] -eq 'fn' } | 
-                ForEach-Object { $_[3] }
+            $registrarName = if ($registrarEntity -and $registrarEntity.vcardArray) {
+                $registrarEntity.vcardArray[1] |
+                    Where-Object { $_[0] -eq 'fn' } |
+                    ForEach-Object { $_[3] }
+            } else { $null }
             
             # Get nameservers from RDAP
-            $nameservers = $rdap.nameservers | ForEach-Object { $_.ldhName }
+            $nameservers = if ($rdap.nameservers) {
+                $rdap.nameservers | ForEach-Object { $_.ldhName }
+            } else { @() }
             
             $result = [PSCustomObject]@{
                 Domain              = $Domain
@@ -172,7 +179,7 @@ function Get-DomainStatus {
             }
             
             # WHOIS cross-reference
-            if ($IncludeWhois -or $riskLevel -in @('Medium', 'High')) {
+            if ($IncludeWhois -or $riskLevel -in @('Medium', 'High', 'Critical')) {
                 $whoisData = Get-WhoisRaw -Domain $Domain -ErrorAction SilentlyContinue
                 if ($whoisData) {
                     if ($whoisData -match 'Updated Date:\s*(\d{4}-\d{2}-\d{2})') {
@@ -299,24 +306,34 @@ function Get-WhoisRaw {
         return $null
     }
     
+    $tcp = $null
+    $stream = $null
+    $writer = $null
+    $reader = $null
+
     try {
         $tcp = New-Object System.Net.Sockets.TcpClient($server, 43)
         $tcp.ReceiveTimeout = 10000
         $stream = $tcp.GetStream()
         $writer = New-Object System.IO.StreamWriter($stream)
         $reader = New-Object System.IO.StreamReader($stream)
-        
+
         $writer.WriteLine($Domain)
         $writer.Flush()
-        
+
         $response = $reader.ReadToEnd()
-        $tcp.Close()
-        
+
         return $response
     }
     catch {
         Write-Verbose "WHOIS query failed for $Domain : $_"
         return $null
+    }
+    finally {
+        if ($reader) { $reader.Dispose() }
+        if ($writer) { $writer.Dispose() }
+        if ($stream) { $stream.Dispose() }
+        if ($tcp) { $tcp.Close() }
     }
 }
 
