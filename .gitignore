@@ -1,0 +1,21 @@
+# PowerShell
+*.ps1xml
+*.psd1.bak
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Test output
+TestResults/
+coverage/
