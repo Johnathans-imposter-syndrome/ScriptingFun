@@ -23,14 +23,14 @@ This function solves both problems by:
 
 ## Features
 
-✅ **Domain Registration Analysis** - Query RDAP (with WHOIS fallback) for registration details
-✅ **Intelligent Risk Assessment** - Automatically evaluate domain expiration risk based on EPP status codes
-✅ **SSL/TLS Certificate Analysis** - Live certificate validation with detailed cryptographic information
-✅ **DNS Record Enumeration** - Query A, AAAA, NS, MX, CNAME, and CAA records via DNS-over-HTTPS
-✅ **Certificate Transparency Logs** - Optional CT log queries to view certificate history
-✅ **Parking Detection** - Multi-signal analysis to identify parked or inactive domains
-✅ **Actionable Recommendations** - Priority-based recommendations for certificate renewal
-✅ **Clean Output Format** - Human-readable summaries with `Raw*` properties for full data access
+- **Domain Registration Analysis** - Query RDAP (with WHOIS fallback) for registration details
+- **Intelligent Risk Assessment** - Automatically evaluate domain expiration risk based on EPP status codes
+- **SSL/TLS Certificate Analysis** - Live certificate validation with detailed cryptographic information
+- **DNS Record Enumeration** - Query A, AAAA, NS, MX, CNAME, and CAA records via DNS-over-HTTPS
+- **Certificate Transparency Logs** - Optional CT log queries to view certificate history
+- **Parking Detection** - Multi-signal analysis to identify parked or inactive domains
+- **Actionable Recommendations** - Priority-based recommendations for certificate renewal
+- **Clean Output Format** - Human-readable summaries with `Raw*` properties for full data access
 
 ## Requirements
 
